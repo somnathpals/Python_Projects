@@ -26,7 +26,8 @@ show_wind = st.sidebar.checkbox('Show Wind Speed', value = True)
 city = st.text_input('Enter City Name :')
 
 if st.button('Get Weather') and city:
-    url = f'{base_url}/forecast.json?key={api_key}&q={city}&days={days}&aqi=no'
+#    url = f'{base_url}/forecast.json?key={api_key}&q={city}&days={days}&aqi=no'
+    url = f'{base_url}/forecast.json?key={api_key}&q={city}&aqi=no'
     r=requests.get(url)
     if r.status_code == 200:
         data = r.json()
