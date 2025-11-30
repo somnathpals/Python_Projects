@@ -27,7 +27,7 @@ city = st.text_input('Enter City Name :')
 
 if st.button('Get Weather') and city:
 #    url = f'{base_url}/forecast.json?key={api_key}&q={city}&days={days}&aqi=no'
-    url = f'{base_url}/forecast.json?key={api_key}&q={city}&aqi=no'
+    url = f'{base_url}?key={api_key}&q={city}&aqi=no'
     r=requests.get(url)
     if r.status_code == 200:
         data = r.json()
@@ -35,10 +35,12 @@ if st.button('Get Weather') and city:
         country = data['location']['country']
         time = data['location']['localtime']
         temp = data['current']['temp_c']
+        visibility = data['current']['vis_km']
         cond = data['current']['condition']['text']
         icon = 'https:' + data['current']['condition']['icon']
         humidity = data['current']['humidity']
         wind = data['current']['wind_kph']
+       
         
         st.subheader(f'{loc}, {country}')
         st.image(icon, width=80)
@@ -49,6 +51,7 @@ if st.button('Get Weather') and city:
         with col1:
             st.write(f' Local Date and Time: {time}')
             st.write(f' Temperature: {temp} {unit[0]}')
+            st.write(f' Visibility: {visibility} Km')
         #    st.write(f' Condition: {cond}')
             
         with col2:
