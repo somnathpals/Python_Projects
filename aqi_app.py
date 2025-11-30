@@ -68,7 +68,7 @@ Data provided by the World Air Quality Index Project.
 # Input field for the city name
 city_input = st.text_input(
     "Enter City Name (e.g., London, Beijing, New Delhi)", 
-    "London"
+#    "London"
 ).strip()
 
 # Button to trigger the data fetch
