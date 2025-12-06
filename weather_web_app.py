@@ -1,6 +1,8 @@
 import streamlit as st
 
 import requests
+#from datetime import datetime
+#import time
 
 api_key = "bd8626c6b0f14c5ebe3150120252811"
 
@@ -15,6 +17,8 @@ st.title('Weather App')
 
 api_key = "bd8626c6b0f14c5ebe3150120252811"
 base_url = "http://api.weatherapi.com/v1/current.json"
+astro_url = "http://api.weatherapi.com/v1/astronomy.json"
+forecast_url = "http://api.weatherapi.com/v1/forecast.json"
 
 st.sidebar.header('Setting')
 
@@ -27,7 +31,11 @@ city = st.text_input('Enter City Name :')
 
 if st.button('Get Weather') and city:
 #    url = f'{base_url}/forecast.json?key={api_key}&q={city}&days={days}&aqi=no'
-    url = f'{base_url}?key={api_key}&q={city}&aqi=no'
+#    url = f'{base_url}/astronmy.json?key={api_key}&q={city}&aqi=yes'
+    url = f'{base_url}?key={api_key}&q={city}&aqi=yes'
+#    current_date = datetime.now().strftime("%A, %B %d, %Y")
+#    st.write(f"📅 **Local Date:** {current_date}")   
+    
     r=requests.get(url)
     if r.status_code == 200:
         data = r.json()
@@ -40,7 +48,8 @@ if st.button('Get Weather') and city:
         icon = 'https:' + data['current']['condition']['icon']
         humidity = data['current']['humidity']
         wind = data['current']['wind_kph']
-       
+    #    sunrise = data['astronomy'] ['sunrise'] 
+    #    sunset = data['astronomy'] ['sunset'] 
         
         st.subheader(f'{loc}, {country}')
         st.image(icon, width=80)
@@ -49,19 +58,23 @@ if st.button('Get Weather') and city:
         #col1 = st.columns(1)
 
         with col1:
-            st.write(f' Local Date and Time: {time}')
-            st.write(f' Temperature: {temp} {unit[0]}')
-            st.write(f' Visibility: {visibility} Km')
+            st.write(f'📅 🕒 Local Date and Time: {time}')
+        #    st.write(f' Temperature: {temp} {unit[0]}')
+            st.write(f'🌡️ **Temperature:** {temp} {unit[0]} °C')
+            st.write(f'👁️ **Visibility:** {visibility} Km')
         #    st.write(f' Condition: {cond}')
             
         with col2:
-           st.write(f' Condition: {cond}')
+           st.write(f' **Condition:** {cond}')
                     
         if show_humidity:
-            st.write(f' Humidity: {humidity} %')
+        #    st.write(f' Humidity: {humidity} %')
+            st.write(f'💧 **Humidity:** {humidity}%')
         if show_wind:
-            st.write(f' Wind Speed: {wind} kph')
-        
+        #    st.write(f' Wind Speed: {wind} kph')
+            st.write(f'💨 **Wind Speed:** {wind} km/h')
+ 
+      
 #        st.markdown('---')
 
 #        st.header(f' {days} - Days Forecast')
