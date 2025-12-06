@@ -12,7 +12,7 @@ def get_weather(city):
     response = requests.get(complete_url)
     return response.json()
 
-st.set_page_config(page_title= 'Weather App', layout= 'wide')
+st.set_page_config(page_title= 'Weather App', layout= 'centered')
 st.title('Weather App')
 
 api_key = "bd8626c6b0f14c5ebe3150120252811"
