@@ -60,7 +60,8 @@ if st.button('Get Weather') and city:
         with col1:
             st.write(f'📅 🕒 **Local Date and Time:** {time}')
         #    st.write(f' Temperature: {temp} {unit[0]}')
-            st.write(f'🌡️ **Temperature:** {temp} {unit[0]}°C')
+        #    st.write(f'🌡️ **Temperature:** {temp} {unit[0]}°C')
+            st.write(f'🌡️ **Temperature:** {temp} °C')
             st.write(f'👁️ **Visibility:** {visibility} Km')
         #    st.write(f' Condition: {cond}')
             
