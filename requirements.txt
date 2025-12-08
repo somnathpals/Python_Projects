@@ -4,6 +4,6 @@ requests
 plotly 
 pandas
 numpy
-fpdf
+matplotlib.plotly
+fpdf2
 io
-matplotlib
