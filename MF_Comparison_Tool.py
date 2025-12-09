@@ -228,14 +228,14 @@ plt.savefig(combined_chart_buf, format="png")
 combined_chart_buf.seek(0)
 plt.close(fig)
 
-# ------------------- XIRR Comparison Chart -------------------
+# ------------------- XIRR Simulation Chart -------------------
 st.header("💰 5-Year SIP XIRR Simulation (Considering ₹ 5000 per month SIP)")
 funds = [r["Fund"] for r in results]
 xirr_values = [r["XIRR_5Y_SIP"] for r in results]
 fig_xirr = go.Figure([go.Bar(x=funds, y=xirr_values, text=[f"{v:.2f}%" for v in xirr_values],
                              textposition='auto', marker_color='orange')])
 fig_xirr.update_layout(
-    title="5-Year SIP XIRR Comparison",
+    title="5-Year SIP XIRR Simulation",
     yaxis_title="XIRR (%)",
     template="plotly_white",
     height=400
@@ -244,8 +244,8 @@ st.plotly_chart(fig_xirr, use_container_width=True)
 
 # Save XIRR chart for PDF
 fig, ax = plt.subplots(figsize=(8, 4))
-ax.bar(funds, xirr_values, color='orange')
-ax.set_title("5-Year SIP XIRR Comparison")
+ax.bar(funds, xirr_values, color='blue')
+ax.set_title("5-Year SIP XIRR Simulation")
 ax.set_ylabel("XIRR (%)")
 for i, v in enumerate(xirr_values):
     ax.text(i, v + 0.5, f"{v:.2f}%", ha='center', fontsize=9)
@@ -253,19 +253,6 @@ pdf_xirr_buf = io.BytesIO()
 plt.savefig(pdf_xirr_buf, format="png")
 pdf_xirr_buf.seek(0)
 plt.close(fig)
-
-# ----------------- Export to Excel -----------------------
-#st.header("📥 Export to Excel")
-#excel_buf = io.BytesIO()
-#with pd.ExcelWriter(excel_buf, engine="xlsxwriter") as writer:
-#    df_results.to_excel(writer, index=False, sheet_name="Summary")
-#    df_cat_avg.to_excel(writer, index=False, sheet_name="Category Avg")
-#st.download_button(
-#    "Download Excel File",
-#    data=excel_buf.getvalue(),
-#    file_name="MutualFund_Comparison.xlsx",
-#    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-#)
 
 # ----------------- Export to PDF -----------------------
 st.header("📄 Download PDF Report")
