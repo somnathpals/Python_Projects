@@ -279,6 +279,7 @@ st.download_button(
 
 # Footer
 st.markdown("---")
-st.markdown("**Note:** This tool uses the daily NAV data from AMFI Portal website. "
-           "Data accuracy depends on the source data and it's availailability.")
+st.markdown("**Note:** " \
+            "This tool uses the daily NAV data from AMFI Portal website. "
+            "Data accuracy depends on the source data and it's availailability.")
 st.markdown("⚠️ **Disclaimer:** This is for informational purposes only and should not be considered as investment advice.")
