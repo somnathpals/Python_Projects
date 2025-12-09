@@ -229,7 +229,7 @@ combined_chart_buf.seek(0)
 plt.close(fig)
 
 # ------------------- XIRR Comparison Chart -------------------
-st.header("💰 5-Year SIP XIRR Comparison (₹ 5000 per month)")
+st.header("💰 5-Year SIP XIRR Simulation (Considering ₹ 5000 per month SIP)")
 funds = [r["Fund"] for r in results]
 xirr_values = [r["XIRR_5Y_SIP"] for r in results]
 fig_xirr = go.Figure([go.Bar(x=funds, y=xirr_values, text=[f"{v:.2f}%" for v in xirr_values],
@@ -276,3 +276,9 @@ st.download_button(
     file_name="MF_Comparison_Report.pdf",
     mime="application/pdf"
 )
+
+# Footer
+st.markdown("---")
+st.markdown("**Note:** This tool uses the mftool library to fetch real-time mutual fund data from AMFI. "
+           "Data accuracy depends on the source API availability.")
+st.markdown("⚠️ **Disclaimer:** This is for informational purposes only and should not be considered as investment advice.")
