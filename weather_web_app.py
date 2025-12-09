@@ -9,7 +9,7 @@ import altair as alt
 st.set_page_config(page_title='Weather App', layout='centered')
 st.title('Weather App')
 
-api_key = "bd8626c6b0f14c5ebe3150120252811"
+api_key = "9da2d5cbd6e548b1aa7171028250912"
 
 current_url = "http://api.weatherapi.com/v1/current.json"
 forecast_url = "http://api.weatherapi.com/v1/forecast.json"
