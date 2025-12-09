@@ -74,7 +74,7 @@ def create_pdf(results_df, charts, combined_chart_buf):
             f"NAV: {row['NAV']:.2f}\n"
             f"AUM: {row['AUM']}\n"
             f"Annualized CAGR: {row['Annualized CAGR']:.2f}%\n"
-            f"5Y Rolling CAGR: {row['Rolling CAGR 5Y']:.2f}%\n"
+            f"5Y Rolling CAGR: {row['5Y Rolling CAGR']:.2f}%\n"
         )
         pdf.ln(3)
 
@@ -181,7 +181,7 @@ for fund, rolling_5yr in rolling_returns_dict.items():
 fig_plotly.update_layout(
     title="5-Year Rolling CAGR Comparison",
     xaxis_title="Date",
-    yaxis_title="Rolling Return (%)",
+    yaxis_title="Rolling CAGR (%)",
     hovermode="x unified",
     template="plotly_white",
     height=500
@@ -194,7 +194,7 @@ fig, ax = plt.subplots(figsize=(10, 5))
 for fund, rolling_5yr in rolling_returns_dict.items():
     ax.plot(rolling_5yr.index, rolling_5yr.values, label=fund)
 ax.set_title("5-Year Rolling CAGR Comparison")
-ax.set_ylabel("Rolling Return (%)")
+ax.set_ylabel("Rolling CAGR (%)")
 ax.grid(True)   
 ax.legend()
 combined_chart_buf = io.BytesIO()
