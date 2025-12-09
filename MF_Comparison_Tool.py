@@ -5,6 +5,7 @@ import requests
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import io
+import plotly.graph_objects as go
 
 # ------------------------- Helper Functions --------------------------
 
@@ -39,11 +40,17 @@ def load_nav_history(scheme_code):
     category = data.get("meta", {}).get("scheme_category", None)
     return df, category, aum
 
-def compute_rolling_return(df, years=5):
+#def compute_rolling_return(df, years=5):
+#    days = years * 365
+#    df = df.set_index("date")
+#    df["rolling"] = df["nav"].pct_change(days) * 100
+#    return df["rolling"].dropna()
+
+def compute_rolling_cagr(df, years=5):
     days = years * 365
     df = df.set_index("date")
-    df["rolling"] = df["nav"].pct_change(days) * 100
-    return df["rolling"].dropna()
+    df["rolling_cagr"] = ((df["nav"] / df["nav"].shift(days)) ** (1/years) - 1) * 100
+    return df["rolling_cagr"].dropna()
 
 def compute_cagr(df):
     start = df["nav"].iloc[0]
@@ -52,17 +59,7 @@ def compute_cagr(df):
     years = days / 365
     return ((end / start) ** (1 / years) - 1) * 100
 
-#def compute_std_dev(df):
-#    df["daily_ret"] = df["nav"].pct_change()
-#    return df["daily_ret"].std() * np.sqrt(252)
-
-#def compute_sharpe(df, rf=0.05):
-#    df["daily_ret"] = df["nav"].pct_change()
-#    mean = df["daily_ret"].mean() * 252
-#    std = df["daily_ret"].std() * np.sqrt(252)
-#    return (mean - rf) / std if std > 0 else np.nan
-
-def create_pdf(results_df, charts):
+def create_pdf(results_df, charts, combined_chart_buf):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
@@ -76,28 +73,30 @@ def create_pdf(results_df, charts):
             f"Fund: {row['Fund']}\n"
             f"NAV: {row['NAV']:.2f}\n"
             f"AUM: {row['AUM']}\n"
-            f"CAGR: {row['CAGR']:.2f}%\n"
-            f"5Y Avg Rolling Return: {row['RollingReturn5Y']:.2f}%\n"
-    #        f"StdDev: {row['StdDev']:.3f}\n"
-    #       f"Sharpe: {row['Sharpe']:.2f}\n"
-    #        f"Category: {row['Category']}\n"
+            f"Annualized CAGR: {row['Annualized CAGR']:.2f}%\n"
+            f"5Y Rolling CAGR: {row['Rolling CAGR 5Y']:.2f}%\n"
         )
         pdf.ln(3)
+
+#    # Individual fund charts
+#    pdf.add_page()
+#    pdf.cell(200, 10, "Rolling Return Charts", ln=True)
+#    for name, img_bytes in charts.items():
+#        pdf.ln(5)
+#        pdf.cell(200, 6, name, ln=True)
+#        pdf.image(img_bytes, w=170)
+
+    # Combined rolling return chart
     pdf.add_page()
-    pdf.cell(200, 10, "Rolling Return Charts", ln=True)
-    for name, img_bytes in charts.items():
-        pdf.ln(5)
-        pdf.cell(200, 6, name, ln=True)
-        pdf.image(img_bytes, w=170)
+    pdf.cell(200, 10, "Combined 5-Year Rolling CAGR", ln=True)
+    pdf.image(combined_chart_buf, w=170)
+
     buf = io.BytesIO()
     pdf.output(buf)
     return buf.getvalue()
 
 # ------------------------- Streamlit UI --------------------------
 
-# ==========================================================
-# PAGE SETTINGS
-# ==========================================================
 st.set_page_config(page_title="Mutual Fund Comparison Tool", layout="wide")
 
 st.markdown("""
@@ -111,7 +110,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("📊 Mutual Fund Comparison Tool")
-st.write("Select multiple funds from AMFI list and compare metrics including Fund CAGR, 5-year rolling return, AUM, Category Average CAGR, and export to Excel/PDF.")
+st.write("Select multiple funds from AMFI list and compare metrics including Annualized CAGR, 5-year rolling CAGR, AUM, Category Average CAGR, and export to Excel/PDF.")
 
 # Load AMFI list
 df_amfi = load_amfi_funds()
@@ -123,6 +122,7 @@ if not selected_funds:
 results = []
 category_groups = {}
 charts_for_pdf = {}
+rolling_returns_dict = {}
 
 # ------------------- METRIC CALCULATION -------------------
 for fund in selected_funds:
@@ -131,20 +131,16 @@ for fund in selected_funds:
     if nav_df is None or len(nav_df) < 800:
         st.warning(f"Not enough NAV data for {fund}")
         continue
-    rolling_5yr = compute_rolling_return(nav_df)
+    rolling_5yr = compute_rolling_cagr(nav_df)
+    rolling_returns_dict[fund] = rolling_5yr
     cagr = compute_cagr(nav_df)
-#    std_dev = compute_std_dev(nav_df)
-#    sharpe = compute_sharpe(nav_df)
     category_groups.setdefault(category, []).append(cagr)
     results.append({
         "Fund": fund,
         "NAV": nav_df["nav"].iloc[-1],
         "AUM": aum,
-        "CAGR": cagr,
-        "RollingReturn5Y": rolling_5yr.mean(),
-#        "StdDev": std_dev,
-#        "Sharpe": sharpe,
-#        "Category": category
+        "Annualized CAGR": cagr,
+        "Rolling CAGR 5Y": rolling_5yr.mean(),
     })
     # Save rolling chart for PDF
     fig, ax = plt.subplots(figsize=(5, 4))
@@ -164,33 +160,47 @@ df_results = pd.DataFrame(results)
 st.dataframe(df_results, width='stretch')
 
 # ------------------- Category Averages ---------------------
-st.header("📊 Category Average CAGR")
+st.header("📊 Category Average Annualized CAGR")
 cat_avg = {cat: np.mean(vals) for cat, vals in category_groups.items()}
 df_cat_avg = pd.DataFrame(list(cat_avg.items()), columns=["Category", "Avg CAGR (%)"])
 st.dataframe(df_cat_avg, width='stretch')
 
-# ------------------- Side-by-Side Rolling Return -------------------
-st.header("📉 5-Year Rolling Return")
-num_funds = len(selected_funds)
-num_cols = min(3, num_funds)  # up to 3 columns
-cols = st.columns(num_cols)
-col_index = 0
-for fund in selected_funds:
-    scheme_code = df_amfi[df_amfi["SchemeName"] == fund]["SchemeCode"].values[0]
-    nav_df, _, _ = load_nav_history(scheme_code)
-    if nav_df is None or len(nav_df) < 800:
-        continue
-    rolling_5yr = compute_rolling_return(nav_df)
-    #fig, ax = plt.subplots(figsize=(4, 3))
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.plot(rolling_5yr, label=fund)
-    ax.set_title(fund, fontsize=10)
-    ax.set_ylabel("%")
-    ax.grid(True)
-    cols[col_index].pyplot(fig)
-    plt.close(fig)
-    col_index = (col_index + 1) % num_cols
+# ------------------- Combined 5-Year Rolling Return Chart (Interactive) -------------------
+st.header("📉 5-Year Rolling CAGR (Interactive Combined Chart)")
 
+fig_plotly = go.Figure()
+for fund, rolling_5yr in rolling_returns_dict.items():
+    fig_plotly.add_trace(go.Scatter(
+        x=rolling_5yr.index,
+        y=rolling_5yr.values,
+        mode='lines',
+        name=fund,
+        hovertemplate='Date: %{x|%d-%b-%Y}<br>Rolling Return: %{y:.2f}%<extra></extra>'
+    ))
+
+fig_plotly.update_layout(
+    title="5-Year Rolling CAGR Comparison",
+    xaxis_title="Date",
+    yaxis_title="Rolling Return (%)",
+    hovermode="x unified",
+    template="plotly_white",
+    height=500
+)
+
+st.plotly_chart(fig_plotly, width='stretch')
+
+# Save combined chart for PDF (Matplotlib static)
+fig, ax = plt.subplots(figsize=(10, 5))
+for fund, rolling_5yr in rolling_returns_dict.items():
+    ax.plot(rolling_5yr.index, rolling_5yr.values, label=fund)
+ax.set_title("5-Year Rolling CAGR Comparison")
+ax.set_ylabel("Rolling Return (%)")
+ax.grid(True)   
+ax.legend()
+combined_chart_buf = io.BytesIO()
+plt.savefig(combined_chart_buf, format="png")
+combined_chart_buf.seek(0)
+plt.close(fig)
 
 # ----------------- Export to Excel -----------------------
 st.header("📥 Export to Excel")
@@ -207,16 +217,10 @@ st.download_button(
 
 # ----------------- Export to PDF -----------------------
 st.header("📄 Download PDF Report")
-pdf_data = create_pdf(df_results, charts_for_pdf)
+pdf_data = create_pdf(df_results, charts_for_pdf, combined_chart_buf)
 st.download_button(
     label="Download PDF Report",
     data=pdf_data,
     file_name="MF_Comparison_Report.pdf",
     mime="application/pdf"
 )
-
-# Footer
-st.markdown("---")
-st.markdown("**Note:** This tool uses real-time mutual fund data from AMFI. "
-           "Data accuracy depends on the source API availability.")
-st.markdown("⚠️ **Disclaimer:** This is for informational purposes only and should not be considered as investment advice.")
