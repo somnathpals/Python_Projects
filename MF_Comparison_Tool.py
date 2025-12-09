@@ -131,7 +131,7 @@ def create_pdf(results_df, charts, combined_chart_buf, pdf_xirr_buf):
 
     # XIRR chart
     pdf.add_page()
-    pdf.cell(200, 10, "5-Year SIP XIRR Comparison (Rs. 5000/month)", ln=True)
+    pdf.cell(200, 10, "5-Year SIP XIRR Simulation (Considering Rs. 5000/month)", ln=True)
     pdf.image(pdf_xirr_buf, w=170)
 
     buf = io.BytesIO()
