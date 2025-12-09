@@ -110,7 +110,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("📊 Mutual Fund Comparison Tool")
-st.write("Select multiple funds from AMFI list and compare metrics including Annualized CAGR, 5-year rolling CAGR, AUM, Category Average CAGR, and export to Excel/PDF.")
+st.write("Select multiple funds from AMFI list and compare metrics including Annualized CAGR, 5-year Rolling CAGR, AUM, Category Average Annualized CAGR, and export to Excel/PDF.")
 
 # Load AMFI list
 df_amfi = load_amfi_funds()
@@ -140,7 +140,7 @@ for fund in selected_funds:
         "NAV": nav_df["nav"].iloc[-1],
         "AUM": aum,
         "Annualized CAGR": cagr,
-        "Rolling CAGR 5Y": rolling_5yr.mean(),
+        "5Y Rolling CAGR": rolling_5yr.mean(),
     })
     # Save rolling chart for PDF
     fig, ax = plt.subplots(figsize=(5, 4))
