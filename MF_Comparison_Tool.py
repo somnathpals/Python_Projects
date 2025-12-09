@@ -213,7 +213,7 @@ fig_plotly.update_layout(
     template="plotly_white",
     height=500
 )
-st.plotly_chart(fig_plotly, uwidth='stretch')
+st.plotly_chart(fig_plotly, width='stretch')
 
 # Save combined chart for PDF
 fig, ax = plt.subplots(figsize=(10, 5))
