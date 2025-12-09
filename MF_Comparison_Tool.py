@@ -213,7 +213,7 @@ fig_plotly.update_layout(
     template="plotly_white",
     height=500
 )
-st.plotly_chart(fig_plotly, use_container_width=True)
+st.plotly_chart(fig_plotly, uwidth='stretch')
 
 # Save combined chart for PDF
 fig, ax = plt.subplots(figsize=(10, 5))
@@ -240,7 +240,7 @@ fig_xirr.update_layout(
     template="plotly_white",
     height=400
 )
-st.plotly_chart(fig_xirr, use_container_width=True)
+st.plotly_chart(fig_xirr, width='stretch')
 
 # Save XIRR chart for PDF
 fig, ax = plt.subplots(figsize=(8, 4))
