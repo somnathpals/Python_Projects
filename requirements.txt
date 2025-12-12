@@ -8,3 +8,5 @@ numpy
 matplotlib
 fpdf2
 xlsxwriter
+folium
+altair
