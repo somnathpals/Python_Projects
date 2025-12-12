@@ -10,4 +10,3 @@ fpdf2
 xlsxwriter
 streamlit-folium
 folium
-altair
