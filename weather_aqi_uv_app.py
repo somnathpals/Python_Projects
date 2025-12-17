@@ -4,6 +4,20 @@ import pandas as pd
 import altair as alt
 import folium
 from streamlit_folium import st_folium
+import urllib.parse
+
+def inject_pwa():
+    st.markdown(
+        """
+        <link rel="manifest" href="manifest.json">
+        <meta name="theme-color" content="#2E86C1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Weather AQI">
+        <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1116/1116453.png">
+        """,
+        unsafe_allow_html=True
+    )
 
 # ============================================================
 # PAGE CONFIG
@@ -12,6 +26,8 @@ st.set_page_config(
     page_title="Weather + AQI Dashboard",
     layout="centered"
 )
+
+inject_pwa()
 
 st.title("🌤️ Weather + AQI Dashboard")
 
@@ -106,6 +122,39 @@ def uv_health_alert(uv):
     if uv <= 10:
         return ("🔴 Very high UV. Protective clothing strongly advised.", "error")
     return ("☠️ Extreme UV. Stay indoors if possible.", "error")
+
+def whatsapp_share(city, aqi, uv):
+    message = f"""
+🌤 Weather + AQI Update
+
+📍 City: {city}
+🌫 AQI: {aqi}
+☀️ UV Index: {uv}
+
+Stay safe!
+"""
+    encoded = urllib.parse.quote(message)
+    url = f"https://wa.me/?text={encoded}"
+
+    st.markdown(
+        f"""
+        <a href="{url}" target="_blank">
+            <button style="
+                background:#25D366;
+                color:white;
+                padding:12px 18px;
+                border:none;
+                border-radius:8px;
+                font-size:16px;
+                cursor:pointer;
+                width:100%;
+            ">
+            📤 Share via WhatsApp
+            </button>
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ============================================================
 # INPUT FORM
