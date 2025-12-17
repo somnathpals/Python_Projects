@@ -4,25 +4,6 @@ import pandas as pd
 import altair as alt
 import folium
 from streamlit_folium import st_folium
-import urllib.parse
-
-def whatsapp_share(city, aqi, uv):
-    message = (
-        f"🌤 Weather + AQI Update\n\n"
-        f"📍 City: {city}\n"
-        f"🌫 AQI: {aqi}\n"
-        f"☀️ UV Index: {uv}\n\n"
-        f"Stay safe!"
-    )
-
-    encoded_msg = urllib.parse.quote(message)
-    url = f"https://wa.me/?text={encoded_msg}"
-
-    st.markdown(
-        f"### 📤 Share\n"
-        f"[👉 Share this update on WhatsApp]({url})",
-        unsafe_allow_html=False
-    )
 
 # ============================================================
 # PAGE CONFIG
@@ -212,7 +193,7 @@ if st.session_state.city:
     df = pd.DataFrame(rows)
     df["time"] = pd.to_datetime(df["time"])
 
-    st.markdown("### 🕒 Hourly Temperature")
+    st.markdown("### 🕒 Hourly Temperature (48 Hours)")
     st.altair_chart(
         alt.Chart(df).mark_line(point=True).encode(
             x="time:T", y="temp:Q", tooltip=["time", "temp"]
@@ -269,14 +250,6 @@ if st.session_state.city:
     # UV Alert
     uv_msg, uv_level = uv_health_alert(uv)
     getattr(st, uv_level)(f"☀️ UV Alert: {uv_msg}")
-
-    # Whatsapp Share
-    if aqi_data.get("status") == "ok":
-        whatsapp_share(
-        city=city,
-        aqi=aqi_data["data"]["aqi"],
-        uv=uv
-)
 
     # ========================================================
     # MAP
