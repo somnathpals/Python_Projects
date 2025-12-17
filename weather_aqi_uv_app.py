@@ -34,15 +34,6 @@ st.set_page_config(
 
 st.title("🌤️ Weather + AQI Dashboard")
 
-st.markdown("## 📲 Install This App")
-
-st.info(
-    "📌 **Add to Home Screen**\n\n"
-    "• **Android (Chrome):** Tap ⋮ → *Add to Home screen*\n"
-    "• **iPhone (Safari):** Tap 🔗 Share → *Add to Home Screen*\n\n"
-    "The app will open like a native app."
-)
-
 # ============================================================
 # SESSION STATE
 # ============================================================
