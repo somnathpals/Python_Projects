@@ -225,7 +225,9 @@ if st.session_state.city:
     # ========================================================
     st.markdown("### 🌫 Air Quality Index")
 
+    # ================= AQI DATA =================
     aqi_data = get_aqi(city)
+
     if aqi_data.get("status") == "ok":
         aqi = aqi_data["data"]["aqi"]
         label, color = aqi_category(aqi)
@@ -268,9 +270,9 @@ if st.session_state.city:
     uv_msg, uv_level = uv_health_alert(uv)
     getattr(st, uv_level)(f"☀️ UV Alert: {uv_msg}")
 
-# Whatsapp Share
-if aqi_data.get("status") == "ok":
-    whatsapp_share(
+    # Whatsapp Share
+    if aqi_data.get("status") == "ok":
+        whatsapp_share(
         city=city,
         aqi=aqi_data["data"]["aqi"],
         uv=uv
@@ -282,7 +284,7 @@ if aqi_data.get("status") == "ok":
     lat = weather["location"]["lat"]
     lon = weather["location"]["lon"]
 
-    st.markdown("### 🌍 AQI Map")
+    st.markdown("### 🌍 Interactive AQI Map")
     m = folium.Map(location=[lat, lon], zoom_start=5)
     folium.TileLayer(WAQI_TILE, attr="WAQI").add_to(m)
     folium.Marker([lat, lon], tooltip=city).add_to(m)
