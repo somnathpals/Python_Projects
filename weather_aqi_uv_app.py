@@ -146,10 +146,12 @@ if st.session_state.city:
     feels = weather["current"]["feelslike_c"] if unit == "Celsius" else weather["current"]["feelslike_f"]
     uv = weather["current"]["uv"]
     humidity = weather["current"]["humidity"]
+    visibility = weather["current"].get("vis_km", "N/A")
+    pressure = weather["current"].get("pressure_mb", "N/A")
     wind = weather["current"]["wind_kph"]
     icon = "https:" + weather["current"]["condition"]["icon"]
     condition = weather["current"]["condition"]["text"]
-
+   
     uv_label, uv_color = uv_category(uv)
 
     # ---------------- ASTRONOMY ----------------
@@ -161,16 +163,19 @@ if st.session_state.city:
 
     st.image(icon, width=80)
     st.markdown(f"### {condition}")
-    st.metric("🌡 Temperature", f"{temp}° {unit[0]}")
+    st.metric("🌡️ Temperature", f"{temp}° {unit[0]}")
     st.metric("🤔 Feels Like", f"{feels}° {unit[0]}")
-
+    
     col1, col2 = st.columns(2)
     col1.metric("💧 Humidity", f"{humidity}%")
     col2.metric("💨 Wind", f"{wind} km/h")
-
+    
     col1, col2 = st.columns(2)
     col1.metric("🌅 Sunrise", sunrise)
     col2.metric("🌇 Sunset", sunset)
+
+    col1.metric("👁️ Visibility", f"{visibility} km")
+    col2.metric("🧭 Pressure", f"{pressure} mb")
 
     st.markdown(
         f"<div style='background:{uv_color};padding:12px;border-radius:10px;text-align:center;color:white;'>"
